@@ -2,6 +2,7 @@ const express = require('express');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
+const axios = require('axios');
 const public_users = express.Router();
 
 
@@ -99,5 +100,49 @@ public_users.get('/review/:isbn',function (req, res) {
     return res.status(404).json({ message: "Book not found" });
   }
 });
+// ---------------- ASYNC/AWAIT ROUTES FOR TASKS 10–13 ----------------
+
+// Task 10
+public_users.get('/async/books', async (req, res) => {
+    try {
+      const response = await axios.get('http://localhost:5000/');
+      return res.status(200).json(response.data);
+    } catch (error) {
+      return res.status(500).json({ message: "Error fetching books", error: error.message });
+    }
+  });
+  // Task 11
+public_users.get('/async/isbn/:isbn', async (req, res) => {
+    try {
+      const { isbn } = req.params;
+      const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
+      return res.status(200).json(response.data);
+    } catch (error) {
+      return res.status(404).json({ message: "Book not found", error: error.message });
+    }
+  });
+  
+  // Task 12
+  public_users.get('/async/author/:author', async (req, res) => {
+    try {
+      const { author } = req.params;
+      const response = await axios.get(`http://localhost:5000/author/${author}`);
+      return res.status(200).json(response.data);
+    } catch (error) {
+      return res.status(404).json({ message: "Author not found", error: error.message });
+    }
+  });
+  
+  // Task 13
+  public_users.get('/async/title/:title', async (req, res) => {
+    try {
+      const { title } = req.params;
+      const response = await axios.get(`http://localhost:5000/title/${title}`);
+      return res.status(200).json(response.data);
+    } catch (error) {
+      return res.status(404).json({ message: "Title not found", error: error.message });
+    }
+  });
+  
 
 module.exports.general = public_users;
